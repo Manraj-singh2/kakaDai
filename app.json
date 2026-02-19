@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "kaka-dai",
-    "slug": "kaka-dai",
+    "name": "Kaka Dai",
+    "slug": "Kaka Dai",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -38,7 +38,9 @@
             "backgroundColor": "#000000"
           }
         }
-      ]
+      ],
+      "expo-audio",
+      "expo-video"
     ],
     "experiments": {
       "typedRoutes": true,
