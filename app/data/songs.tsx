@@ -5,7 +5,6 @@ export interface Song {
   album: string;
   artwork: any; 
   audioUrl: string;
-  duration:number;
 }
 
 export const SONGS: Song[] = [
@@ -16,7 +15,6 @@ export const SONGS: Song[] = [
   album: 'Him & Her',
   artwork: 'https://lq.djjohal.com/covers/736115/Rang.jpg',
   audioUrl: 'https://dl2.djring.com/sd2.djjohal.com/128/525531/Rang(DJJOhAL.Com).mp3',
-  duration:100,
   },
   {
    id: '2',
@@ -25,7 +23,6 @@ export const SONGS: Song[] = [
   album: '',
   artwork: 'https://lq.djjohal.com/covers/736154/5-7.jpg',
   audioUrl: 'https://dl2.djring.com/sd2.djjohal.com/128/525598/5-7(DJJOhAL.Com).mp3',
-  duration:100,
   },
   {
    id: '3',
@@ -34,7 +31,6 @@ export const SONGS: Song[] = [
   album: '',
   artwork: 'https://lq.djjohal.com/covers/736149/V.I.P.jpg',
   audioUrl: 'https://dl2.djring.com/sd2.djjohal.com/128/525588/V.I.P(DJJOhAL.Com).mp3',
-  duration:100,
   },
   {
    id: '4',
@@ -43,7 +39,6 @@ export const SONGS: Song[] = [
   album: '',
   artwork: 'https://lq.djjohal.com/covers/736147/Pain Killer.jpg',
   audioUrl: 'https://dl2.djring.com/sd2.djjohal.com/128/525586/Pain Killer(DJJOhAL.Com).mp3',
-  duration:100,
   },
   {
    id: '5',
@@ -52,7 +47,6 @@ export const SONGS: Song[] = [
   album: 'Saroor',
   artwork: 'https://lq.djjohal.com/covers/730207/Her Town.jpg',
   audioUrl: 'https://dl2.djring.com/sd2.djjohal.com/128/516611/Her Town(DJJOhAL.Com).mp3',
-  duration:100,
   },
 ]
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -9,10 +9,13 @@ import {
   StatusBar,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { useAudioPlayer, useAudioPlayerStatus ,setAudioModeAsync} from "expo-audio";
+import {
+  useAudioPlayer,
+  useAudioPlayerStatus,
+  setAudioModeAsync,
+} from "expo-audio";
 import Slider from "@react-native-community/slider";
 import { useRouter, useLocalSearchParams } from "expo-router";
-
 
 const { width } = Dimensions.get("window");
 
@@ -35,7 +38,7 @@ export default function PlayerScreen() {
     album: params.album,
     artwork: params.artwork,
     audioUrl: params.audioUrl,
-    duration: parseInt(params.duration || "0")
+    duration: parseInt(params.duration || "0"),
   };
 
   const player = useAudioPlayer(song.audioUrl);
@@ -43,15 +46,29 @@ export default function PlayerScreen() {
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [isLiked, setIsLiked] = useState(false);
+  const isMountedRef = useRef(true);
 
   useEffect(() => {
+    isMountedRef.current = true;
     setAudioModeAsync({ playsInSilentMode: true });
+
     player.play();
 
     return () => {
-      player.pause();
+      isMountedRef.current = false;
+      //clearTimeout(playTimeout);
+
+      //Safe cleanup - check if player still exists
+      try {
+        if (player && status.playing) {
+          player.pause();
+        }
+      } catch (error) {
+        // Silently ignore cleanup errors
+        console.log("Player cleanup skipped" + error);
+      }
     };
-  },[]);
+  }, []);
 
   useEffect(() => {
     if (status.currentTime !== undefined) {
@@ -69,6 +86,8 @@ export default function PlayerScreen() {
   };
 
   const handlePlayPause = () => {
+    if (!isMountedRef.current) return;
+
     if (status.playing) {
       player.pause();
     } else {
@@ -77,7 +96,14 @@ export default function PlayerScreen() {
   };
 
   const handleClose = () => {
-    player.pause();
+    try {
+      if (status.playing) {
+        player.pause();
+      }
+    } catch (error) {
+      console.log("Pause on close skipped" + error);
+    }
+
     router.back();
   };
 

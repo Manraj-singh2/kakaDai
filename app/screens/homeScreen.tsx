@@ -37,7 +37,6 @@ export default function HomeScreen() {
         album: song.album,
         artwork: song.artwork,
         audioUrl: song.audioUrl,
-        duration: song.duration?.toString() || ""
       }
     });
   };
