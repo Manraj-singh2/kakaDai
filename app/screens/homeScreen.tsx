@@ -4,14 +4,12 @@ import {
   Text,
   StyleSheet,
   ScrollView,
-  SafeAreaView,
   StatusBar,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import HorizontalSongList from '../components/HorizontalSongList';
 import SONGS, { Song } from '../data/songs';
-
-
 
 
 export default function HomeScreen() {
