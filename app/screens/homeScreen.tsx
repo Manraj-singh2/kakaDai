@@ -4,28 +4,34 @@ import {
   Text,
   StyleSheet,
   ScrollView,
+  SafeAreaView,
   StatusBar,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import HorizontalSongList from '../components/HorizontalSongList';
+import MiniPlayer from '../components/MiniPlayer';  // ✅ Import MiniPlayer
+import { usePlayer } from '../context/PlayerContext';  // ✅ Import usePlayer
 import SONGS, { Song } from '../data/songs';
-
 
 export default function HomeScreen() {
   const router = useRouter();
+  const { playSong } = usePlayer();  // ✅ Get playSong from context
 
   const getGreeting = () => {
     const hour = new Date().getHours();
-    if (hour < 12) return 'Good Morning Pineapple 🍍';
-    if (hour < 18) return 'Haaye Oye';
-    return 'Oo janada ee';
+    if (hour < 12) return 'Good Morning PineApple 🍍';
+    if (hour < 18) return 'Oh haa Baii';
+    return 'O Janda aei';
   };
 
   const recentlyPlayed = SONGS.slice(0, 5);
   const recommended = SONGS.slice(2, 7);
 
   const handleSongPress = (song: Song) => {
+    // ✅ Play song using context (makes it available globally)
+    playSong(song);
+    
+    // ✅ Open full player
     router.push({
       pathname: '/player',
       params: {
@@ -75,8 +81,10 @@ export default function HomeScreen() {
             onSongPress={handleSongPress}
           />
         </View>
-
       </ScrollView>
+
+      {/* ✅ Mini Player */}
+      <MiniPlayer />
     </SafeAreaView>
   );
 }
@@ -90,7 +98,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingBottom: 100,
+    paddingBottom: 170, // ✅ Space for mini player + tab bar
   },
   greeting: {
     color: '#fff',

@@ -9,42 +9,26 @@ import {
   StatusBar,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import {
-  useAudioPlayer,
-  useAudioPlayerStatus,
-  setAudioModeAsync,
-} from "expo-audio";
+import { setAudioModeAsync } from "expo-audio";
 import Slider from "@react-native-community/slider";
-import { useRouter, useLocalSearchParams } from "expo-router";
+import { useRouter } from "expo-router";
+import { usePlayer } from "./context/PlayerContext"; 
 
 const { width } = Dimensions.get("window");
 
 export default function PlayerScreen() {
   const router = useRouter();
-  const params = useLocalSearchParams<{
-    id: string;
-    title: string;
-    artist: string;
-    album: string;
-    artwork: string;
-    audioUrl: string;
-    duration: string;
-  }>();
+  const { 
+    currentSong, 
+    isPlaying, 
+    currentTime, 
+    duration,
+    pauseSong,
+    resumeSong,
+    seekTo,
+    setVolume,
+  } = usePlayer();
 
-  const song = {
-    id: params.id,
-    title: params.title,
-    artist: params.artist,
-    album: params.album,
-    artwork: params.artwork,
-    audioUrl: params.audioUrl,
-    duration: parseInt(params.duration || "0"),
-  };
-
-  const player = useAudioPlayer(song.audioUrl);
-  const status = useAudioPlayerStatus(player);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
   const [isLiked, setIsLiked] = useState(false);
   const isMountedRef = useRef(true);
 
@@ -52,32 +36,10 @@ export default function PlayerScreen() {
     isMountedRef.current = true;
     setAudioModeAsync({ playsInSilentMode: true });
 
-    player.play();
-
     return () => {
       isMountedRef.current = false;
-      //clearTimeout(playTimeout);
-
-      //Safe cleanup - check if player still exists
-      try {
-        if (player && status.playing) {
-          player.pause();
-        }
-      } catch (error) {
-        // Silently ignore cleanup errors
-        console.log("Player cleanup skipped" + error);
-      }
     };
   }, []);
-
-  useEffect(() => {
-    if (status.currentTime !== undefined) {
-      setCurrentTime(status.currentTime);
-    }
-    if (status.duration !== undefined) {
-      setDuration(status.duration);
-    }
-  }, [status]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -87,25 +49,25 @@ export default function PlayerScreen() {
 
   const handlePlayPause = () => {
     if (!isMountedRef.current) return;
-
-    if (status.playing) {
-      player.pause();
+    
+    if (isPlaying) {
+      pauseSong();
     } else {
-      player.play();
+      resumeSong();
     }
   };
 
   const handleClose = () => {
-    try {
-      if (status.playing) {
-        player.pause();
-      }
-    } catch (error) {
-      console.log("Pause on close skipped" + error);
-    }
-
     router.back();
   };
+
+  if (!currentSong) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>No song playing</Text>
+      </View>
+    );
+  }
 
   return (
     <LinearGradient
@@ -120,7 +82,7 @@ export default function PlayerScreen() {
         </TouchableOpacity>
         <View style={styles.headerCenter}>
           <Text style={styles.headerSubtitle}>PLAYING FROM LIBRARY</Text>
-          <Text style={styles.headerTitle}>{song.album}</Text>
+          <Text style={styles.headerTitle}>{currentSong.album}</Text>
         </View>
         <TouchableOpacity style={styles.headerButton}>
           <Text style={styles.headerIcon}>•••</Text>
@@ -130,7 +92,7 @@ export default function PlayerScreen() {
       <View style={styles.artworkContainer}>
         <View style={styles.artworkShadow}>
           <Image
-            source={{ uri: song.artwork }}
+            source={{ uri: currentSong.artwork }}
             style={styles.artwork}
             resizeMode="cover"
           />
@@ -140,10 +102,10 @@ export default function PlayerScreen() {
       <View style={styles.songInfo}>
         <View style={styles.songTextContainer}>
           <Text style={styles.songTitle} numberOfLines={1}>
-            {song.title}
+            {currentSong.title}
           </Text>
           <Text style={styles.artistName} numberOfLines={1}>
-            {song.artist}
+            {currentSong.artist}
           </Text>
         </View>
         <TouchableOpacity onPress={() => setIsLiked(!isLiked)}>
@@ -157,7 +119,7 @@ export default function PlayerScreen() {
           minimumValue={0}
           maximumValue={duration || 1}
           value={currentTime}
-          onSlidingComplete={(value) => player.seekTo(value)}
+          onSlidingComplete={(value) => seekTo(value)}
           minimumTrackTintColor="white"
           maximumTrackTintColor="rgba(255, 255, 255, 0.3)"
           thumbTintColor="transparent"
@@ -176,7 +138,7 @@ export default function PlayerScreen() {
         </TouchableOpacity>
 
         <TouchableOpacity onPress={handlePlayPause} style={styles.playButton}>
-          <Text style={styles.playIcon}>{status.playing ? "⏸" : "▶️"}</Text>
+          <Text style={styles.playIcon}>{isPlaying ? "⏸" : "▶️"}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.controlButton}>
@@ -192,9 +154,7 @@ export default function PlayerScreen() {
             minimumValue={0}
             maximumValue={1}
             value={1}
-            onValueChange={(value) => {
-              player.volume = value;
-            }}
+            onValueChange={(value) => setVolume(value)}
             minimumTrackTintColor="rgba(255, 255, 255, 0.9)"
             maximumTrackTintColor="rgba(255, 255, 255, 0.3)"
             thumbTintColor="transparent"
@@ -223,6 +183,16 @@ export default function PlayerScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#000',
+  },
+  errorText: {
+    color: '#fff',
+    fontSize: 18,
   },
   header: {
     flexDirection: "row",

@@ -1,12 +1,9 @@
 import { Tabs } from "expo-router";
 import React from "react";
-import { StyleSheet } from "react-native";
 import { BlurView } from "expo-blur";
 import { HapticTab } from "@/components/haptic-tab";
 import { IconSymbol } from "@/components/ui/icon-symbol";
-import { Colors } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
-import { LinearGradient } from 'expo-linear-gradient';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -20,7 +17,7 @@ export default function TabLayout() {
         tabBarButton: HapticTab,
         tabBarStyle: {
           position: "absolute",
-          bottom: 25,
+          bottom: 9,
           left: 20,
           right: 20,
           elevation: 0,
@@ -43,8 +40,8 @@ export default function TabLayout() {
             style={{
               position: "absolute",
               top: 0,
-              left: 0,
-              right: 0,
+              left: 6,
+              right: 6,
               bottom: 0,
               backgroundColor:
                 colorScheme === "dark"
