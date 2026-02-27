@@ -1,15 +1,12 @@
-import React from 'react';
-import {
-  View,
-  Text,
-  Image,
-  TouchableOpacity,
-  StyleSheet,
-} from 'react-native';
-import { useRouter } from 'expo-router';
-import { BlurView } from 'expo-blur';
-import { usePlayer } from '../context/PlayerContext';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import React from "react";
+import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
+import { useRouter } from "expo-router";
+import { BlurView } from "expo-blur";
+import { usePlayer } from "../context/PlayerContext";
+import { useColorScheme } from "@/hooks/use-color-scheme";
+import Play from "@/assets/icons/play.png";
+import Pause from "@/assets/icons/pause.png";
+import Next from "@/assets/icons/next.png";
 
 export default function MiniPlayer() {
   const router = useRouter();
@@ -20,7 +17,7 @@ export default function MiniPlayer() {
 
   const handleOpenPlayer = () => {
     router.push({
-      pathname: '/player',
+      pathname: "/player",
       params: {
         id: currentSong.id,
         title: currentSong.title,
@@ -47,16 +44,13 @@ export default function MiniPlayer() {
       style={styles.container}
     >
       <BlurView
-        intensity={90}
-        tint={colorScheme === 'dark' ? 'dark' : 'light'}
+        intensity={20}
+        tint={colorScheme === "dark" ? "dark" : "light"}
         style={styles.blurContainer}
       >
         <View style={styles.content}>
           {/* Album Artwork */}
-          <Image
-            source={{ uri: currentSong.artwork }}
-            style={styles.artwork}
-          />
+          <Image source={{ uri: currentSong.artwork }} style={styles.artwork} />
 
           {/* Song Info */}
           <View style={styles.info}>
@@ -74,9 +68,7 @@ export default function MiniPlayer() {
             style={styles.playButton}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           >
-            <Text style={styles.playIcon}>
-              {isPlaying ? '⏸' : '▶️'}
-            </Text>
+            <Image source={isPlaying ? Pause : Play} style={styles.playIcon} />
           </TouchableOpacity>
 
           {/* Forward Button */}
@@ -84,7 +76,7 @@ export default function MiniPlayer() {
             style={styles.forwardButton}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           >
-            <Text style={styles.forwardIcon}>⏭</Text>
+            <Image source={Next} style={styles.forwardIcon}></Image>
           </TouchableOpacity>
         </View>
       </BlurView>
@@ -94,14 +86,14 @@ export default function MiniPlayer() {
 
 const styles = StyleSheet.create({
   container: {
-    position: 'absolute',
-    bottom: 95, // Above tab bar (65 + 30 margin)
+    position: "absolute",
+    bottom: 80,
     left: 8,
     right: 8,
     height: 60,
-    borderRadius: 12,
-    overflow: 'hidden',
-    shadowColor: '#000',
+    borderRadius: 20,
+    overflow: "hidden",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -109,15 +101,15 @@ const styles = StyleSheet.create({
   },
   blurContainer: {
     flex: 1,
-    backgroundColor: 'rgba(28, 28, 30, 0.8)',
+    backgroundColor: "rgba(28, 28, 30, 0.8)",
     borderWidth: 0.5,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: "rgba(255, 255, 255, 0.1)",
     borderRadius: 12,
   },
   content: {
     flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingHorizontal: 12,
   },
   artwork: {
@@ -128,36 +120,39 @@ const styles = StyleSheet.create({
   },
   info: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   title: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 15,
-    fontWeight: '600',
+    fontWeight: "600",
     marginBottom: 2,
   },
   artist: {
-    color: '#8E8E93',
+    color: "#ffffff",
     fontSize: 13,
   },
   playButton: {
     width: 36,
     height: 36,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginRight: 8,
   },
   playIcon: {
-    fontSize: 22,
+    width: 45,
+    height: 45,
+    tintColor: "#ffffff",
   },
   forwardButton: {
     width: 36,
     height: 36,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   forwardIcon: {
-    color: '#8E8E93',
-    fontSize: 22,
+    width: 45,
+    height: 45,
+    tintColor: "#ffffff",
   },
 });

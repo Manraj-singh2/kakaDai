@@ -1,6 +1,6 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { Song } from '../data/songs';
-import { useAudioPlayer, useAudioPlayerStatus } from 'expo-audio';
+import { useAudioPlayer, useAudioPlayerStatus, setAudioModeAsync } from 'expo-audio';
 
 interface PlayerContextType {
   currentSong: Song | null;
@@ -20,19 +20,44 @@ const PlayerContext = createContext<PlayerContextType | null>(null);
 
 export function PlayerProvider({ children }: { children: React.ReactNode }) {
   const [currentSong, setCurrentSong] = useState<Song | null>(null);
-  const [audioUrl, setAudioUrl] = useState<string>('');
+  const isInitialized = useRef(false);
   
-  const player = useAudioPlayer(audioUrl || '');
+  // Create player ONCE with empty string
+  const player = useAudioPlayer('');
   const status = useAudioPlayerStatus(player);
 
+  // Configure audio mode once on mount
+  useEffect(() => {
+    if (!isInitialized.current) {
+      setAudioModeAsync({ playsInSilentMode: true });
+      isInitialized.current = true;
+    }
+  }, []);
+
   const playSong = (song: Song) => {
-    setCurrentSong(song);
-    setAudioUrl(song.audioUrl);
-    
-    //Small delay to ensure player is ready
-    setTimeout(() => {
+    try {
+      // If same song, just play
+      if (currentSong?.id === song.id) {
+        player.play();
+        return;
+      }
+
+      // Stop current playback if any
+      if (status.playing) {
+        player.pause();
+      }
+
+      // Replace the source directly
+      player.replace(song.audioUrl);
+      
+      // Update state
+      setCurrentSong(song);
+      
+      // Play immediately - no timeout needed!
       player.play();
-    }, 100);
+    } catch (error) {
+      console.error('Play song error:', error);
+    }
   };
 
   const pauseSong = () => {
@@ -41,7 +66,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
         player.pause();
       }
     } catch (error) {
-      console.log('Pause error:', error);
+      console.error('Pause error:', error);
     }
   };
 
@@ -49,7 +74,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     try {
       player.play();
     } catch (error) {
-      console.log('Resume error:', error);
+      console.error('Resume error:', error);
     }
   };
 
@@ -57,7 +82,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     try {
       player.seekTo(time);
     } catch (error) {
-      console.log('Seek error:', error);
+      console.error('Seek error:', error);
     }
   };
 
@@ -65,7 +90,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     try {
       player.volume = volume;
     } catch (error) {
-      console.log('Volume error:', error);
+      console.error('Volume error:', error);
     }
   };
 

@@ -12,16 +12,19 @@ import { LinearGradient } from "expo-linear-gradient";
 import { setAudioModeAsync } from "expo-audio";
 import Slider from "@react-native-community/slider";
 import { useRouter } from "expo-router";
-import { usePlayer } from "./context/PlayerContext"; 
+import { usePlayer } from "./context/PlayerContext";
+import Play from "@/assets/icons/play.png";
+import Pause from "@/assets/icons/pause.png";
+import Next from "@/assets/icons/next.png";
 
 const { width } = Dimensions.get("window");
 
 export default function PlayerScreen() {
   const router = useRouter();
-  const { 
-    currentSong, 
-    isPlaying, 
-    currentTime, 
+  const {
+    currentSong,
+    isPlaying,
+    currentTime,
     duration,
     pauseSong,
     resumeSong,
@@ -49,7 +52,7 @@ export default function PlayerScreen() {
 
   const handlePlayPause = () => {
     if (!isMountedRef.current) return;
-    
+
     if (isPlaying) {
       pauseSong();
     } else {
@@ -138,7 +141,7 @@ export default function PlayerScreen() {
         </TouchableOpacity>
 
         <TouchableOpacity onPress={handlePlayPause} style={styles.playButton}>
-          <Text style={styles.playIcon}>{isPlaying ? "⏸" : "▶️"}</Text>
+          <Image source={isPlaying ? Pause : Play}></Image>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.controlButton}>
@@ -161,19 +164,6 @@ export default function PlayerScreen() {
           />
           <Text style={styles.volumeIcon}>🔊</Text>
         </View>
-
-        <View style={styles.actionButtons}>
-          <TouchableOpacity>
-            <Text style={styles.actionIcon}>↻</Text>
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <Text style={styles.actionIcon}>🎧</Text>
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <Text style={styles.actionIcon}>☰</Text>
-          </TouchableOpacity>
-        </View>
-
         <Text style={styles.deviceName}>iPhone Speaker</Text>
       </View>
     </LinearGradient>
@@ -186,12 +176,12 @@ const styles = StyleSheet.create({
   },
   errorContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#000',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#000",
   },
   errorText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 18,
   },
   header: {
@@ -301,10 +291,10 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
   },
   playButton: {
-    width: 85,
-    height: 85,
+    width: 50,
+    height: 50,
     borderRadius: 42.5,
-    backgroundColor: "rgba(255, 255, 255, 0.98)",
+    //backgroundColor: "rgba(255, 255, 255, 0.98)",
     justifyContent: "center",
     alignItems: "center",
     marginHorizontal: 25,
